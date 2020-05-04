@@ -58,15 +58,70 @@
                 // 编程式路由导航(跳转)
                 // this.$router.push(`/search/${this.keyName}?name=${this.keyName}`)
                 //对象的方式传递,此时如果有：keyName就不能用path了必须使用name
-                this.$router.push({
+                // this.$router.push({
+                //     name:'Search',
+                //     params:{
+                //         keyName:this.keyName
+                //     },
+                //     query:{
+                //         name:this.keyName
+                //     }
+                // })
+
+                //当params数据为空时,不能跳转,url会出现错误
+                //解决:不传递params或者设为undefined
+
+                //判断params是否为空,就是判断输入框的值keyName是否为空
+                // if(this.keyName===''){ //为空时不传递pramas数据
+                //     this.$router.push({ //重写后的push
+                //     name:'Search',
+                    
+                // })
+                // }else{
+                //     this.$router.push({ //重写后的push
+                //     name:'Search',
+                //     params:{
+                //         keyName:this.keyName
+                //     },
+                //     query:{
+                //         name:this.keyName
+                //     }
+                // })
+                // }
+
+                //为空时传递undefined
+                this.$router.push({ //重写后的push
                     name:'Search',
                     params:{
-                        keyName:this.keyName
+                        keyName:this.keyName===''?undefined:this.keyName
                     },
                     query:{
                         name:this.keyName
                     }
                 })
+
+                //当参数不变时,如果点击第二次,则会报错,
+                // this.$router.push({
+                //     name:'Search',
+                //     params:{
+                //         keyName:this.keyName
+                //     },
+                //     query:{
+                //         name:this.keyName
+                //     }
+                // },()=>{})
+
+                
+
+                // this.$router.push({ //重写后的push
+                //     name:'Search',
+                //     params:{
+                //         keyName:this.keyName
+                //     },
+                //     query:{
+                //         name:this.keyName
+                //     }
+                // })
             }
         },
     }
