@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div>
     <Header/>
 
     <router-view></router-view>
@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import Header from "@/Components/Header";
-import Footer from "@/Components/Footer";
+import Header from "@/Component/Header";
+import Footer from "@/Component/Footer";
 export default {
   name: 'App',
   components: {

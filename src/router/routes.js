@@ -9,8 +9,14 @@ export default [
         component:Home,
     },
     {
-        path: '/search',
-        component: Search
+        name:'Search',
+        path: '/search/:keyName?',
+        component: Search,
+        //props方式传递参数
+        props:route=>({
+            keyName:route.params.keyName,
+            name:route.query.name,
+        })
     },
     
     {

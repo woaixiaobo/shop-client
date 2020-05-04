@@ -37,7 +37,7 @@
             </h1>
             <div class="searchArea">
                 <form action="###" class="searchForm">
-                    <input type="text" id="autocomplete" class="input-error input-xxlarge" />
+                    <input type="text" id="autocomplete" class="input-error input-xxlarge" v-model="keyName"/>
                     <button class="sui-btn btn-xlarge btn-danger" type="button" @click="search">搜索</button>
                 </form>
             </div>
@@ -48,10 +48,25 @@
 <script>
     export default {
         name: 'Header',
+        data() {
+            return {
+                keyName:'atguigu',
+            }
+        },
         methods: {
             search(){
                 // 编程式路由导航(跳转)
-                this.$router.push('/search')
+                // this.$router.push(`/search/${this.keyName}?name=${this.keyName}`)
+                //对象的方式传递,此时如果有：keyName就不能用path了必须使用name
+                this.$router.push({
+                    name:'Search',
+                    params:{
+                        keyName:this.keyName
+                    },
+                    query:{
+                        name:this.keyName
+                    }
+                })
             }
         },
     }
