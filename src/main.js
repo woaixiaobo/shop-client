@@ -8,6 +8,10 @@ import store from '@/store'
 import TypeNav from "@/Component/TypeNav";
 // 注册全局组件
 Vue.component('TypeNav', TypeNav)
+
+//加载mock
+import './mock/mockServer'
+
 new Vue({
   render: h => h(App),
   router,

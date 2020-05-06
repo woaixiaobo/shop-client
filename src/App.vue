@@ -13,6 +13,7 @@
 import Header from "@/Component/Header";
 import Footer from "@/Component/Footer";
 // import {reqBaseCategoryList, reqLogin} from '@/api'
+import { reqFloors } from '@/api'
 export default {
   name: 'App',
   async mounted() {
@@ -23,6 +24,10 @@ export default {
     // console.log('result2',result2);
     // this.$store.dispatch('getBaseCategoryList');
     this.$store.dispatch('getBaseCategoryList');
+
+    //测试mock数据
+    const result = await reqFloors();
+    console.log('result()',result);
   },
   components: {
     Header,

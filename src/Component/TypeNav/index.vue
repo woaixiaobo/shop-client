@@ -93,29 +93,30 @@ import{ mapState } from 'vuex'
         },
         methods: {
             // showSubCategorys:_.throttle(function(index){
-            //     //必须用函数方式不能用箭头函数,否则this会指向Windows
-            //     //判断currentIndex是否-2,此时就代表以及移除了,取消页面更新(不然节流会进行页面更新)
             //     if(this.currentIndex===-2) return;
             //     this.currentIndex=index;
 
             // },300)
             showSubCategorys:throttle(function(index){
                 //必须用函数方式不能用箭头函数,否则this会指向Windows
-                //判断currentIndex是否-2,此时就代表以及移除了,取消页面更新(不然节流会进行页面更新)
+                //判断currentIndex是否-2,此时就代表以及移除了,
+                //取消页面更新(不然节流(有个延迟)会进行页面更新)
                 if(this.currentIndex===-2) return;
                 this.currentIndex=index;
 
             },300),
             //事件委托  点击搜索项并跳转到搜索页面
             toSearch(event){
-                //用数据解构的方式来吧自定义属性当中是数据取出来 
+                //用数据解构的方式来吧自定义属性当中是数据取出来 ,不知道点击的哪级标签,所以都要取出来,
+                //然后判断点击的几级标签
                 //注意:自定义数据当中的属性名,会自动转化为小写
                 const {categoryname,category1id,category2id,category3id} = event.target.dataset;
-                //只有点击搜索目标时才开始准备query参数,
-                //因为每个搜索目标都有name,所以判断点击的目标是否有name即可
+                //只有点击搜索目标时(a标签)才开始准备query参数,
+                //因为每个搜索目标(a标签)都有name,所以判断点击的目标是否有name即可
                 if(categoryname){
                     //保存categoryname
                     const query={categoryName:categoryname};
+                    //判断是几级标签
                     if(category1id){
                         query.category1Id=category1id;
                     }else if(category2id){
@@ -142,7 +143,7 @@ import{ mapState } from 'vuex'
                 
             },
 
-            //显示三级分类列表
+            //移入显示三级分类列表
             showCategorys(){
                 this.currentIndex=-1;
                 this.isShowFirst=true;

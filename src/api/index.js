@@ -1,5 +1,6 @@
 import ajax from './axjs'
-
+//引入mock
+import mockAjax from './mockAjax'
 //请求获取3级分类列表
 export function reqBaseCategoryList(){
     return ajax({
@@ -19,3 +20,7 @@ export function reqLogin(mobile, password){
     })
     // return ajax.post('/user/passport/login', {mobile, password})
 }
+
+//暴露mock接口的ajax
+export const reqBanners =() =>mockAjax('/banners')
+export const reqFloors =() =>mockAjax('/floors')
