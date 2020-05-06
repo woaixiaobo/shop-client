@@ -22,6 +22,7 @@ export default {
     // const result2 = await reqLogin('13700000000', '111111');
     // console.log('result2',result2);
     // this.$store.dispatch('getBaseCategoryList');
+    this.$store.dispatch('getBaseCategoryList');
   },
   components: {
     Header,

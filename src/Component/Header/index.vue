@@ -88,17 +88,29 @@
                 //     }
                 // })
                 // }
-
-                //为空时传递undefined
-                this.$router.push({ //重写后的push
+                const keyName=this.keyName;
+                //此时可能已经有了query参数,所以要取出合二为一
+                const location={
                     name:'Search',
-                    params:{
-                        keyName:this.keyName===''?undefined:this.keyName
-                    },
-                    query:{
-                        name:this.keyName
-                    }
-                })
+                }
+                //判断params当中的keyName是否为空
+                if(keyName){
+                    location.params={keyName}
+                }
+                //获取当前的query(这个参数可以为空,params不可以)
+                const {query} = this.$route;
+                location.query=query;
+                this.$router.push(location);
+                //为空时传递undefined
+                // this.$router.push({ //重写后的push
+                //     name:'Search',
+                //     params:{
+                //         keyName:this.keyName===''?undefined:this.keyName
+                //     },
+                //     query:{
+                //         name:this.keyName
+                //     }
+                // })
 
                 //当参数不变时,如果点击第二次,则会报错,
                 // this.$router.push({
