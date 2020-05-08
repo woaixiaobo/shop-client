@@ -28,10 +28,10 @@ export default{
             //成功后,将数据交给mutations处理,进行数据更新
             //判断状态码是否正确
             // console.log(reslut);
-            // if(reslut.code===200){
-                const banners = reslut;
+            if(reslut.code===200){
+                const banners = reslut.data;
                 commit('GETBANNERS',banners)
-            // }
+            }
         },
         async getFloors({commit}){
             //发送异步请求
