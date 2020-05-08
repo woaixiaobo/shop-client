@@ -4,10 +4,13 @@
         <div class="sortList clearfix">
             <div class="center">
                 <!--banner轮播-->
-                <div class="swiper-container" id="mySwiper">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <img src="../images/banner1.jpg" />
+                <div class="swiper-container" ref="swiper">
+                    <div class="swiper-wrapper" >
+                        <!-- 此时是动态数据,需要在列表更新之后再进行轮播状态,否则就是先轮播才显示数据,
+                        但是先轮播是没有数据的,所以导致轮播失败,因此要用watch + $nextTick()的方法来解决这个问题
+                        -->
+                        <div class="swiper-slide" v-for="banner in banners" :key="banner.id">
+                            <img :src="banner.imgUrl" />
                         </div>
                         <!-- <div class="swiper-slide">
                             <img src="../images/banner2.jpg" />
@@ -111,8 +114,62 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import Swiper from 'swiper'
+    import 'swiper/css/swiper.min.css'
     export default {
+        name:'ListContainer',
+        computed: {
+            ...mapState({
+                banners: state => state.home.banners
+            })
+        },
+        watch: {
+            banners(val){
+                //列表更新后的数据(就是获取的接口数据)
+                console.log(val);
+                //nextTick方法在列表数据更新后再次获取列表的数据,然后此时在创建swiper对象
+                //就可以正常显示轮播效果了,否则是没有数据的
+                //因为vue更新界面是异步的,我们更新了数据,监听回调会立马更新数据,
+                //但是页面更新是异步的,此时列表当中还没有数据(console.log(this.$refs.msg.innerHTML)),
+                //所以在这时创建swiper是没有轮播效果的
+                this.$nextTick(()=>{
+                    this.initSwiper();
+                })
+            }
+        },
+        mounted() {
+            //列表数据显示之后再创建Swiper才有正常的轮播效果,但是这种方法并不妥当,所以改为下边的方法
+            // setTimeout(()=>{
+            //     initSwiper();
+            // })
+        },
+        methods: {
+            initSwiper(){               
+                //这样写会把所有的swiper都起作用
+                // new Swiper ('.swiper-container', {
 
+                //所以用ref标识目标元素
+                // setTimeout(()=>{
+                    new Swiper (this.$refs.swiper, {
+                        direction: 'horizontal', // 水平切换选项
+                        loop: true, // 循环模式选项
+                        
+                        // 如果需要分页器
+                        pagination: {
+                        el: '.swiper-pagination',
+                        },
+                        
+                        // 如果需要前进后退按钮
+                        navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                        },
+                        
+                }) 
+                // },1000)
+            }
+        },
     }
 </script>
 <style lang="less" scoped>

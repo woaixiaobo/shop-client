@@ -28,7 +28,7 @@ instance.interceptors.request.use(config=>{
 //响应拦截器
 instance.interceptors.response.use(
     response=>{
-        console.log('响应拦截器成功回调');
+        console.log('mock响应拦截器成功回调');
         //响应成功便把进度条取消
         NProgress.done();
         //返回响应的数据
