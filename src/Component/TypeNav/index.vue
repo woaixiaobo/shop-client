@@ -8,7 +8,7 @@
                     <div class="sort" v-show="isShowFirst">
                     <!-- 事件委托 -->
                 <div class="all-sort-list2" @click="toSearch">
-                    <div class="item bo" v-for="(c1,index) in baseCategoryList"
+                    <div class="item bo" v-for="(c1,index) in  baseCategoryList"
                     :key="c1.categoryId"
                     :class="{item_on:index===currentIndex}"
                     @mouseenter="showSubCategorys(index)">
