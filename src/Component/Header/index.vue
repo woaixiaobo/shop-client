@@ -37,8 +37,8 @@
             </h1>
             <div class="searchArea">
                 <form action="###" class="searchForm">
-                    <input type="text" id="autocomplete" class="input-error input-xxlarge" v-model="keyName"/>
-                    <button class="sui-btn btn-xlarge btn-danger" type="button" @click="search">搜索</button>
+                    <input type="text" id="autocomplete" class="input-error input-xxlarge" placeholder="关键字" v-model="keyName"/>
+                    <button class="sui-btn btn-xlarge btn-danger" @click.prevent="search">搜索</button>
                 </form>
             </div>
         </div>
@@ -50,8 +50,14 @@
         name: 'Header',
         data() {
             return {
-                keyName:'atguigu',
+                keyName:'',
             }
+        },
+        mounted() {
+            //绑定全局事件监听，来接受消息，接到消息后跟新数据，此处是将搜索栏关键字去掉
+            this.$bus.$on('removeKeyName',()=>{
+                this.keyName='';
+            })
         },
         methods: {
             search(){
@@ -100,7 +106,15 @@
                 //获取当前的query(这个参数可以为空,params不可以)
                 const {query} = this.$route;
                 location.query=query;
-                this.$router.push(location);
+                //判断当前页面是否在search页面，是的话用replace不是就用push
+                if(this.$route.path.indexOf('/search')===0){
+                    // /search参数肯定是数组下标的第一位，所以下边为0时就是在search页面，用replace
+                    this.$router.replace(location);
+                }else{//不是在search时就是在home当中，此时用push，其他的用replace，
+                //这样点击后退一次就可以回到home页面
+                    this.$router.push(location);
+                }
+                
                 //为空时传递undefined
                 // this.$router.push({ //重写后的push
                 //     name:'Search',

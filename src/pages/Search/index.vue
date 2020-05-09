@@ -12,14 +12,34 @@
                         </li>
                     </ul>
                     <ul class="fl sui-tag">
-                        <li class="with-x">手机</li>
-                        <li class="with-x">iphone<i>×</i></li>
-                        <li class="with-x">华为<i>×</i></li>
-                        <li class="with-x">OPPO<i>×</i></li>
+                        <!-- query参数小标签显示 -->
+                        <li class="with-x" v-if="options.categoryName">
+                            {{options.categoryName}}
+                            <i @click="removeCategory">×</i>
+                        </li>
+                        <!-- params参数小标签显示 -->
+                        <li class="with-x" v-if="options.keyword">
+                            {{options.keyword}}
+                            <i @click="removeKeyName">×</i>
+                        </li>
+                        <!-- trademark参数小标签显示 -->
+                        <li class="with-x" v-if="options.trademark">
+                            {{options.trademark}}
+                            <i @click="removeTrademark">×</i>
+                        </li>
+                        <!-- 属性参数小标签显示
+                            1.不在使用v-if的方法,因为props是个数组直接遍历即可,数组为空时就是没有
+                                因为显示的是数组的value值
+                            2.如果使用v-if即使数组为空也会显示个 []的样式
+                        -->
+                        <li class="with-x" v-for="(prop,index) in options.props" :key="prop">
+                            {{prop}}
+                            <i @click="removeProp(index)">×</i>
+                        </li>
                     </ul>
                 </div>
                 <!--selector-->
-                <SearchSelector />
+                <SearchSelector :setTrademark="setTrademark" :addProp="addProp"/>
                 <!--details-->
                 <div class="details clearfix">
                     <div class="sui-navbar">
@@ -165,18 +185,77 @@
         methods:{
             updateOptions(){
                 //获取发送请求的参数  根据params和query跟新options
-            //因为是路由传参，所以对$route进行数据解构获取所需的值
-            const {categoryName, category1Id, category2Id, category3Id} = this.$route.query;
-            const {keyName} = this.$route.params
-            //改变this.options当中的值（讲获得的参数传给options）
-            this.options={
-                ...this.options,
-                categoryName,
-                category1Id,
-                category2Id,
-                category3Id,
-                keyName
-            }
+                //因为是路由传参，所以对$route进行数据解构获取所需的值
+                const {categoryName, category1Id, category2Id, category3Id} = this.$route.query;
+                const {keyName} = this.$route.params
+                const keyword = keyName; //一定要按照文档的参数来，文档当中是keyword
+                //我的是keyname所以此处必须给keyword赋值。否则响应体不会响应正确的搜索数据，
+                //就没有搜索结果，只有全部的数据，搜啥都不会发生变化
+                //改变this.options当中的值（讲获得的参数传给options）
+                this.options={
+                    ...this.options,
+                    categoryName,
+                    category1Id,
+                    category2Id,
+                    category3Id,
+                    keyword
+                }
+            },
+            //移除分类的搜索条件（小标签）并不是直接把这个dom删掉了，而是界面重新跳转了
+            removeCategory(){
+                //把分类的数据条件重置
+                this.options.categoryName='';
+                this.options.category1Id='';
+                this.options.category2Id='';
+                this.options.category3Id='';
+                //重新获取数据   //这种方法不会把网址的query部分去掉，所以不可以用
+                // this.$route.dispatch('getProductList',this.options);
+                //重新跳转到当前路由，只携带params参数，用route的path属性即可
+                //因为跳转路由时组件会重新创建，就会重新发送请求，没有query参数的请求，所以可用
+                this.$router.replace(this.$route.path);//通过字符串方式进行传参
+                // 不能用重新发送请求这种方式,因为query参数是在组件创建(跳转)时才会更新的,
+                //直接请求并不能更新query参数和params参数
+                // this.$store.dispatch('getProductList',this.options);
+            },
+            removeKeyName(){//同理query的重置，此处重置params
+                this.options.keyword='';
+                this.$router.replace({//通过对象的方式进行传参，方便去除params参数
+                    name:'Search',
+                    query:this.$route.query,
+                });
+                //触发全局事件总线，跟新数据，将搜索框的搜索词重置
+                this.$bus.$emit('removeKeyName');
+            },
+            //移除trademark小标签,这里是重新获取请求,而不是组件的重新跳转(组件的重新创建导致页面更新)
+            removeTrademark(){
+                this.options.trademark='';
+                // this.$router.replace(this.$route.path)
+                 //或者重新发送请求也可以,因为点击商标时就是直接获取的请求
+                 //没有任何的query和params参数
+                this.$store.dispatch('getProductList',this.options);
+            },
+            //移除属性props的小标签,这里是重新获取请求,而不是组件的重新跳转(组件的重新创建导致页面更新)
+            removeProp(index){
+                //这里接受的参数为index下标,因为要删除的是数组当中的数据,所以用下标删除最合适
+                this.options.props.splice(index,1);
+                //重新发送请求
+                this.$store.dispatch('getProductList',this.options);
+            },
+            //通过trademark商标搜索
+            setTrademark(trademark){
+                this.options.trademark=trademark;
+                //根据点击的商标重新获取请求即可
+                this.$store.dispatch('getProductList',this.options);
+            },
+            //更新(添加)options当中props数组的数据,通过属性搜索
+            addProp(prop){
+                //但是不能重复点击,否则会报错,在此用数组当中的indexOf方法来查找是不是已经存在这个prop
+                //注意:字符串和数组当中都是有indexOf这个方法的
+                if(this.options.props.indexOf(prop)!==-1) return;
+                //更新props数组
+                this.options.props.push(prop);
+                //重新发送请求
+                this.$store.dispatch('getProductList',this.options)
             }
         },
 
