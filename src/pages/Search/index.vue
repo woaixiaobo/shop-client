@@ -141,10 +141,45 @@
                 productList:state=>state.search.productList
             })
         },
-        mounted() {
-            //创建组件过程中发送请求
+        watch: {
+            $route(to){
+                console.log(to);
+                //监视options数据，因为多次复用了，所以把options封装了
+                this.updateOptions();
+                // console.log(this.updateOptions);
+                //因为请求参数变了，所以重新发送请求
+                this.$store.dispatch('getProductList',this.options)
+            }
+        },
+        beforeMount() {//初始化同步代码
+            this.updateOptions();
+        },
+        mounted() { //初始化异步代码
+             //创建组件过程中发送请求
+            //但是此时存在问题，现在都是在search组件当中，在此时搜索的话，是不会重新发送请求的
+            //因为发送请求在声明周期函数当中，而同组件跳转不会销会组件在重新创建组件，所以请求便不会在发送
+            //因此我们监听$store来解决这个问题
             this.$store.dispatch('getProductList',this.options)
         },
+        
+        methods:{
+            updateOptions(){
+                //获取发送请求的参数  根据params和query跟新options
+            //因为是路由传参，所以对$route进行数据解构获取所需的值
+            const {categoryName, category1Id, category2Id, category3Id} = this.$route.query;
+            const {keyName} = this.$route.params
+            //改变this.options当中的值（讲获得的参数传给options）
+            this.options={
+                ...this.options,
+                categoryName,
+                category1Id,
+                category2Id,
+                category3Id,
+                keyName
+            }
+            }
+        },
+
         props: {
             keyName: String,
             name: String,
