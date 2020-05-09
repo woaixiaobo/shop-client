@@ -22,7 +22,7 @@ export default{
                 commit('GETBASECATEGORYLIST',baseCategoryList)
             }
         },
-        async getBanners({commit}){
+        async getBanners({commit}){//获取轮播图数据
             //发送异步请求
             const reslut = await reqBanners();
             //成功后,将数据交给mutations处理,进行数据更新
@@ -33,7 +33,7 @@ export default{
                 commit('GETBANNERS',banners)
             }
         },
-        async getFloors({commit}){
+        async getFloors({commit}){//获取楼层数据
             //发送异步请求
             const reslut = await reqFloors();
             //成功后,将数据交给mutations处理,进行数据更新

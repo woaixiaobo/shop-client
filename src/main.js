@@ -12,7 +12,8 @@ Vue.component('TypeNav', TypeNav)
 Vue.component('Carousel',Carousel)
 //加载mock
 import './mock/mockServer'
-
+//全局引入swiper的样式
+import 'swiper/css/swiper.min.css'
 new Vue({
   render: h => h(App),
   router,

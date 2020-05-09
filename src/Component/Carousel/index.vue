@@ -29,7 +29,7 @@
     
 <script>
 import Swiper from 'swiper'
-import 'swiper/css/swiper.min.css'
+
 export default {
     props:{//接受ListContainer或者Floor组件传递过来的数据
         carouselList: Array

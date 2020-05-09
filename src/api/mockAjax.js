@@ -18,7 +18,7 @@ const instance = axios.create({
 
 //axios拦截器,并在拦截器当中实现进度条的功能
 instance.interceptors.request.use(config=>{
-    console.log('请求拦截器');
+    // console.log('请求拦截器');
     //开启进度条
     NProgress.start();
     //返回请求的内容
@@ -28,11 +28,11 @@ instance.interceptors.request.use(config=>{
 //响应拦截器
 instance.interceptors.response.use(
     response=>{
-        console.log('mock响应拦截器成功回调');
+        // console.log('mock响应拦截器成功回调');
         //响应成功便把进度条取消
         NProgress.done();
         //返回响应的数据
-        console.log(response);
+        // console.log(response);
         return response.data;
     },
     error=>{
