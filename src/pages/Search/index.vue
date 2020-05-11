@@ -45,8 +45,12 @@
                     <div class="sui-navbar">
                         <div class="navbar-inner filter">
                             <ul class="sui-nav">
-                                <li class="active">
-                                    <a href="#">综合</a>
+                                <li :class="{active:options.order.indexOf('1')===0}" @click="setOrder('1')">
+                                    <a href="#">综合
+                                        <i class="iconfont " :class="orderIcon"
+                                        v-if="isActive(1)"
+                                        ></i>
+                                    </a>
                                 </li>
                                 <li>
                                     <a href="#">销量</a>
@@ -57,12 +61,14 @@
                                 <li>
                                     <a href="#">评价</a>
                                 </li>
-                                <li>
-                                    <a href="#">价格⬆</a>
+                                <li :class="{active:options.order.indexOf('2')===0}" @click="setOrder('2')">
+                                    <a href="#">价格
+                                        <i class="iconfont " :class="orderIcon"
+                                        v-if="isActive(2)"
+                                        ></i>
+                                    </a>
                                 </li>
-                                <li>
-                                    <a href="#">价格⬇</a>
-                                </li>
+                                
                             </ul>
                         </div>
                     </div>
@@ -159,7 +165,11 @@
             //获取vuex当中state数据
             ...mapState({
                 productList:state=>state.search.productList
-            })
+            }),
+            //计算排序图标的类名
+            orderIcon(){
+                return this.options.order.split(':')[1]==='desc'?'icondown' : 'iconup'
+            }
         },
         watch: {
             $route(to){
@@ -243,8 +253,14 @@
             },
             //通过trademark商标搜索
             setTrademark(trademark){
+                //如果options没有trademark属性,必须通过set来添加
+                if(!this.options.hasOwnProperty('trademark')){
+                    this.$set(this.options, 'trademark', trademark)
+                }else{
                 this.options.trademark=trademark;
-                //根据点击的商标重新获取请求即可
+                }
+                //根据点击的商标重新获取请求即可,因为此处不需要query和prams等参数,
+                //所以不需要重新进行组件的创建(路由跳转时会重新创建组件,并传递query和params等参数)
                 this.$store.dispatch('getProductList',this.options);
             },
             //更新(添加)options当中props数组的数据,通过属性搜索
@@ -256,6 +272,27 @@
                 this.options.props.push(prop);
                 //重新发送请求
                 this.$store.dispatch('getProductList',this.options)
+            },
+            //点击切换
+            setOrder(flag){//传进来的必须是字符串类型,因为optios当中的order就是字符串类型的
+                //首先得到原本的oderflag和odertype
+                let [orderFlag, orderType] = this.options.order.split(':');
+                //如果点击的是当前排序项,就切换排序
+                if(flag===orderFlag){
+                    //判断排序类型
+                    orderType = orderType==='desc' ? 'asc':'desc';
+                }else{//点击的不是当前项,就切换
+                    orderFlag=flag;
+                    orderType='desc';
+                }
+                //更新options的order的值
+                this.options.order= orderFlag + ':' + orderType;
+                //重新发送请求
+                this.$store.dispatch('getProductList',this.options);
+            },
+            //判断是否显示当前排序项
+            isActive(orderFlag){
+                return this.options.order.indexOf(orderFlag)===0
             }
         },
 

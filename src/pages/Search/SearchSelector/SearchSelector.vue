@@ -4,7 +4,9 @@
       <div class="fl key brand">品牌</div>
       <div class="value logos">
         <ul class="logo-list">
-          <li v-for="tm in trademarkList" :key="tm.tmId" @click="setTrademark(`${tm.tmId}:${tm.tmName}`)">{{tm.tmName}}</li>
+          <li v-for="tm in trademarkList" 
+          :key="tm.tmId" 
+          @click="setTrademark(`${tm.tmId}:${tm.tmName}`)">{{tm.tmName}}</li>
           
           
           <!-- <li><img src="./images/phone06.png" /></li>
@@ -31,7 +33,9 @@
       <div class="fl key">{{arr.attrName}}</div>
       <div class="fl value">
         <ul class="type-list">
-          <li v-for="value in arr.attrValueList" :key="value" @click="addProp(`${arr.attrId}:${value}:${arr.attrName}`)">
+          <li v-for="value in arr.attrValueList"
+          :key="value" 
+          @click="addProp(`${arr.attrId}:${value}:${arr.attrName}`)">
             <a>{{value}}</a>
           </li>
         </ul>
