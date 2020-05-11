@@ -43,7 +43,8 @@
     },
     "rules": {
       "no-irregular-whitespace": "off",
-      "no-prototype-builtins":0
+      "no-prototype-builtins":0,
+      "vue/no-use-v-if-with-v-for":0
     }
   },
   "browserslist": [

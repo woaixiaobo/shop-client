@@ -77,9 +77,12 @@
                             <li class="yui3-u-1-5" v-for="good in productList.goodsList" :key="good.id">
                                 <div class="list-wrap">
                                     <div class="p-img">
-                                        <a href="javascript:">
+                                        <!-- <a href="javascript:">
                                             <img :src="good.defaultImg" />
-                                        </a>
+                                        </a> -->
+                                        <router-link :to="`/detail/${good.id}`">
+                                            <img :src="good.defaultImg" />
+                                        </router-link>
                                     </div>
                                     <div class="price">
                                         <strong>
@@ -88,8 +91,13 @@
                                         </strong>
                                     </div>
                                     <div class="attr">
-                                        <a target="_blank" href="item.html"
-                                            title="促销信息，下单即赠送三个月CIBN视频会员卡！【小米电视新品4A 58 火爆预约中】">{{good.title}}</a>
+                                        <!-- <a target="_blank" href="item.html"
+                                            title="促销信息，下单即赠送三个月CIBN视频会员卡！【小米电视新品4A 58 火爆预约中】">
+                                            {{good.title}}
+                                            </a> -->
+                                        <router-link :to="`/detail/${good.id}`">
+                                            {{good.title}}
+                                        </router-link>
                                     </div>
                                     <div class="commit">
                                         <i class="command">已有<span>2000</span>人评价</i>
@@ -104,35 +112,13 @@
                             
                         </ul>
                     </div>
-                    <div class="fr page">
-                        <div class="sui-pagination clearfix">
-                            <ul>
-                                <li class="prev disabled">
-                                    <a href="#">«上一页</a>
-                                </li>
-                                <li class="active">
-                                    <a href="#">1</a>
-                                </li>
-                                <li>
-                                    <a href="#">2</a>
-                                </li>
-                                <li>
-                                    <a href="#">3</a>
-                                </li>
-                                <li>
-                                    <a href="#">4</a>
-                                </li>
-                                <li>
-                                    <a href="#">5</a>
-                                </li>
-                                <li class="dotted"><span>...</span></li>
-                                <li class="next">
-                                    <a href="#">下一页»</a>
-                                </li>
-                            </ul>
-                            <div><span>共10页&nbsp;</span></div>
-                        </div>
-                    </div>
+                    <Pagination
+                    :currentPage="options.pageNo"
+                    :pageSize="options.pageSize"
+                    :total="productList.total"
+                    :showPageNo="3"
+                    @currentChange="handlCurrentChange"
+                    />
                 </div>
             </div>
         </div>
@@ -157,7 +143,7 @@
                     props: [], // 商品属性的数组: ["属性ID:属性值:属性名"] 示例: ["2:6.0～6.24英寸:屏幕尺寸"]
                     order: '1:desc', // 排序方式  1: 综合,2: 价格 asc: 升序,desc: 降序  示例: "1:desc"
                     pageNo: 1, // 当前页码
-                    pageSize: 10, // 每页数量
+                    pageSize: 5, // 每页数量
                 }
             }
         },
@@ -189,10 +175,22 @@
             //但是此时存在问题，现在都是在search组件当中，在此时搜索的话，是不会重新发送请求的
             //因为发送请求在声明周期函数当中，而同组件跳转不会销会组件在重新创建组件，所以请求便不会在发送
             //因此我们监听$store来解决这个问题
-            this.$store.dispatch('getProductList',this.options)
+            // this.$store.dispatch('getProductList',this.options)
+            //默认分页数据 第一页
+            this.getProductList(1);
         },
         
         methods:{
+            //异步获取指定页码的商品分页数据，默认为第一页
+            getProductList(pageNo=1){
+                //跟新options当中的pageNo(当点击下边的页码时，
+                //子组件会通知父组件改变options当中的pageNo
+                //此时数据也根据对应的页数进行跟新，例如起始页、排序等都是第一页开始
+                //)
+                this.options.pageNo=pageNo
+                //发送请求
+                this.$store.dispatch('getProductList', this.options)
+            },
             updateOptions(){
                 //获取发送请求的参数  根据params和query跟新options
                 //因为是路由传参，所以对$route进行数据解构获取所需的值
@@ -242,14 +240,16 @@
                 // this.$router.replace(this.$route.path)
                  //或者重新发送请求也可以,因为点击商标时就是直接获取的请求
                  //没有任何的query和params参数
-                this.$store.dispatch('getProductList',this.options);
+                // this.$store.dispatch('getProductList',this.options);
+                this.getProductList(1);
             },
             //移除属性props的小标签,这里是重新获取请求,而不是组件的重新跳转(组件的重新创建导致页面更新)
             removeProp(index){
                 //这里接受的参数为index下标,因为要删除的是数组当中的数据,所以用下标删除最合适
                 this.options.props.splice(index,1);
                 //重新发送请求
-                this.$store.dispatch('getProductList',this.options);
+                // this.$store.dispatch('getProductList',this.options);
+                this.getProductList(1);
             },
             //通过trademark商标搜索
             setTrademark(trademark){
@@ -261,7 +261,8 @@
                 }
                 //根据点击的商标重新获取请求即可,因为此处不需要query和prams等参数,
                 //所以不需要重新进行组件的创建(路由跳转时会重新创建组件,并传递query和params等参数)
-                this.$store.dispatch('getProductList',this.options);
+                // this.$store.dispatch('getProductList',this.options);
+                this.getProductList(1);
             },
             //更新(添加)options当中props数组的数据,通过属性搜索
             addProp(prop){
@@ -271,7 +272,8 @@
                 //更新props数组
                 this.options.props.push(prop);
                 //重新发送请求
-                this.$store.dispatch('getProductList',this.options)
+                // this.$store.dispatch('getProductList',this.options)
+                this.getProductList(1);
             },
             //点击切换
             setOrder(flag){//传进来的必须是字符串类型,因为optios当中的order就是字符串类型的
@@ -287,12 +289,20 @@
                 }
                 //更新options的order的值
                 this.options.order= orderFlag + ':' + orderType;
-                //重新发送请求
-                this.$store.dispatch('getProductList',this.options);
+                //重新发送请求,一旦点击排序都是从第一页数据开始
+                // this.$store.dispatch('getProductList',this.options);
+                this.getProductList(1);
             },
             //判断是否显示当前排序项
             isActive(orderFlag){
                 return this.options.order.indexOf(orderFlag)===0
+            },
+            //切换分页
+            handlCurrentChange(page){
+                //根据子组件传来的当前页码数，来跟新options当中的当前页码数 pageNo
+                this.options.pageNo=page;
+                //然后进行重新请求数据
+                this.$store.dispatch('getProductList', this.options)
             }
         },
 
