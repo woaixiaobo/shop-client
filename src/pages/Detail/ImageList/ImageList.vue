@@ -1,16 +1,8 @@
 <template>
-  <div class="swiper-container">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide">
-        <img src="../images/s1.png">
-        <img src="../images/s2.png">
-        <img src="../images/s3.png">
-        <img src="../images/s1.png">
-        <img src="../images/s2.png">
-        <img src="../images/s3.png">
-        <img src="../images/s1.png">
-        <img src="../images/s2.png">
-        <img src="../images/s3.png">
+  <div class="swiper-container" ref="swiper">
+    <div class="swiper-wrapper" >
+      <div class="swiper-slide" v-for="(item, index) in skuImageList" :key="item.id">
+        <img :src="item.imgUrl" :class="{active:currentIndex===index}" @click="changeCurrent(index)">
       </div>
     </div>
     <div class="swiper-button-next"></div>
@@ -19,10 +11,49 @@
 </template>
 
 <script>
-
-  // import Swiper from 'swiper'
+  import {mapGetters} from 'vuex'
+  import Swiper from 'swiper'
   export default {
     name: "ImageList",
+    data() {
+      return {
+        currentIndex: 0, // 当前选中图片的下标
+      }
+    },
+    computed: {
+      ...mapGetters(['skuImageList'])
+    },
+    watch: {
+      skuImageList:{
+        handler(val){
+          //如果没有值就直接return
+          if(val.length===0) return
+          //在列表数据显示之后创建swiper对象
+          this.$nextTick(()=>{
+            new Swiper(this.$refs.swiper, {
+              // 如果需要前进后退按钮
+              navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+              },
+
+              slidesPerView: 5, // 一次显示5页
+              slidesPerGroup: 5, // 以5页为一个单位, 用于翻页
+            })
+          })
+        }
+      }
+    },
+    methods: {
+      changeCurrent(index){
+        if(this.currentIndex!==index){
+          //更新当前图片下标,判断是为了防止点击重复的下标图标
+          this.currentIndex = index;
+          //分发自定义事件,告诉父组件小标改表了,需要更新对应的下标图片
+          this.$emit('currentChange', index)
+        }
+      }
+    },
   }
 </script>
 

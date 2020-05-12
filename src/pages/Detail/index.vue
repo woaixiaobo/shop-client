@@ -7,31 +7,36 @@
     <section class="con">
       <!-- 导航路径区域 -->
       <div class="conPoin">
-        <span>手机、数码、通讯</span>
-        <span>手机</span>
-        <span>Apple苹果</span>
-        <span>iphone 6S系类</span>
+        <!-- 这样写会导致报错,因为这是三级对象,初始值是undefined,
+        第三级对象无法从undefined上查找属性,所以报错 -->
+        <!-- <span>{{detailInfo.categoryView.category1Name}}</span> -->
+        <!-- 在vuex中用计算属性来进行处理 -->
+        <span>{{categoryView.category1Name}}</span>
+        <span>{{categoryView.category2Name}}</span>
+        <span>{{categoryView.category3Name}}</span>
       </div>
       <!-- 主要内容区域 -->
       <div class="mainCon">
         <!-- 左侧放大镜区域 -->
         <div class="previewWrap">
-          <!--放大镜效果-->
-          <Zoom />
+          <!--放大镜效果 将图片路径传给它-->
+          <Zoom v-if="skuImageList.length>0" :bigUrl="skuImageList[currentIndex].imgUrl"
+                :imgUrl="skuImageList[currentIndex].imgUrl"
+          />
           <!-- 小图列表 -->
-          <ImageList />
+          <ImageList @currentChange="currentIndex=$event"/>
         </div>
         <!-- 右侧选择区域布局 -->
         <div class="InfoWrap">
           <div class="goodsDetail">
-            <h3 class="InfoName">Apple iPhone 6s（A1700）64G玫瑰金色 移动通信电信4G手机</h3>
-            <p class="news">推荐选择下方[移动优惠购],手机套餐齐搞定,不用换号,每月还有花费返</p>
+            <h3 class="InfoName">{{skuInfo.skuName}}</h3>
+            <p class="news">{{skuInfo.skuDesc}}</p>
             <div class="priceArea">
               <div class="priceArea1">
                 <div class="title">价&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;格</div>
                 <div class="price">
                   <i>¥</i>
-                  <em>5299</em>
+                  <em>{{skuInfo.price}}</em>
                   <span>降价通知</span>
                 </div>
                 <div class="remark">
@@ -349,10 +354,28 @@
 <script>
   import ImageList from './ImageList/ImageList'
   import Zoom from './Zoom/Zoom'
-
+  import {mapState,mapGetters} from "vuex"
   export default {
     name: 'Detail',
-    
+    data() {
+      return {
+        currentIndex:0,//交给zoom组件的下标(用来显示图片的下标)
+      }
+    },
+    computed: {
+      ...mapState({
+        detailInfo:state=>state.detail.detailInfo,
+      }),
+      ...mapGetters(['categoryView','skuInfo','skuImageList'])
+    },
+    mounted() {//发送异步的actions请求,第二个参数为商品的id,是路由的params参数
+      this.$store.dispatch('getDetailInfo', this.$route.params.id)
+    },
+    methods: {
+      handleCurrentChange(index){
+        this.currentIndex=index;
+      }
+    },
     components: {
       ImageList,
       Zoom

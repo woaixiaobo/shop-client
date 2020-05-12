@@ -122,7 +122,6 @@
                         start=1;
                     }
                 }
-                console.log(start,end);
                 return {start,end}
             }
         },
