@@ -69,13 +69,18 @@
           <div class="choose">
             <div class="chooseArea">
               <div class="choosed"></div>
-              <dl>
-                <dt class="title">选择颜色</dt>
-                <dd changepirce="0" class="active">金色</dd>
-                <dd changepirce="40">银色</dd>
-                <dd changepirce="90">黑色</dd>
+              <dl v-for="(attr) in spuSaleAttrList" :key="attr.baseSaleAttrId">
+                <dt class="title">{{attr.saleAttrName}}</dt>
+                <dd changepirce="40" 
+                v-for="(item, index) in attr.spuSaleAttrValueList" 
+                :key="index"
+                :class="{active:item.isChecked==='1'}"
+                @click="changeColor(item,attr.spuSaleAttrValueList)"
+                >
+                  {{item.saleAttrValueName}}
+                </dd>
               </dl>
-              <dl>
+              <!-- <dl>
                 <dt class="title">内存容量</dt>
                 <dd changepirce="0" class="active">16G</dd>
                 <dd changepirce="300">64G</dd>
@@ -92,16 +97,16 @@
                 <dd changepirce="0" class="active">官方标配</dd>
                 <dd changepirce="-240">优惠移动版</dd>
                 <dd changepirce="-390">电信优惠版</dd>
-              </dl>
+              </dl> -->
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt">
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input autocomplete="off" class="itxt" v-model="skuNum">
+                <a href="javascript:" class="plus" @click="skuNum++">+</a>
+                <a href="javascript:" class="mins" @click="skuNum>1?skuNum--:1">-</a>
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+                <a href="javascript:" @click="addToCart">加入购物车</a>
               </div>
             </div>
           </div>
@@ -360,13 +365,14 @@
     data() {
       return {
         currentIndex:0,//交给zoom组件的下标(用来显示图片的下标)
+        skuNum:1,
       }
     },
     computed: {
       ...mapState({
         detailInfo:state=>state.detail.detailInfo,
       }),
-      ...mapGetters(['categoryView','skuInfo','skuImageList'])
+      ...mapGetters(['categoryView','skuInfo','skuImageList','spuSaleAttrList'])
     },
     mounted() {//发送异步的actions请求,第二个参数为商品的id,是路由的params参数
       this.$store.dispatch('getDetailInfo', this.$route.params.id)
@@ -374,8 +380,51 @@
     methods: {
       handleCurrentChange(index){
         this.currentIndex=index;
+      },
+      //点击改变属性颜色
+      changeColor(item,spuSaleAttrValueList){
+        if(item.isChecked!=='1'){
+          //如果当前项没被选中,则修改为1,首先要把其他项都置为0
+          spuSaleAttrValueList.forEach(v=>{
+            v.isChecked='0'
+          })
+          item.isChecked='1';
+        }
+        console.log(spuSaleAttrValueList);
+      },
+      async addToCart(){
+        //取出商品的ID (就是点击图片跳转时所用的id)  与数量 (data当中的响应式数据skuNum)
+        const skuId = this.$route.params.id;
+        const skuNum = this.skuNum;
+        //最原始的方法,添加一个回调函数,同时对应的vuex当中的方法也要调用
+        // this.$store.dispatch('addToCart',{skuId,skuNum,callback:this.callback})
+
+        //利用promise的返回值  因为async返回的就是一个promise所以利用此特征 ,同时这个函数改为async函数
+        //此次vuex的方法返回的都是正确的promise
+        // const errorMasg = await this.$store.dispatch('addToCart2',{skuId,skuNum})
+        // if(errorMasg){ //如果有值说明添加失败了
+        //   alert(errorMasg)
+        // }else{
+        //   alert('添加成功')
+        // }
+
+        try {
+          await this.$store.dispatch('addToCart3',{skuId,skuNum})
+          alert('添加成功');
+        } catch (error) {
+          alert(error)
+        }
+
+      },
+      callback(errorMasg){
+        if(errorMasg){
+        alert(errorMasg)
+        }else{
+          alert('添加成功');
+        }
       }
     },
+    
     components: {
       ImageList,
       Zoom

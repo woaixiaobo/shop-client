@@ -1,4 +1,4 @@
-import {reqProduct} from '@/api'
+import {reqProduct,reqAddToCart} from '@/api'
 
 //数据管理
 const state={
@@ -14,6 +14,43 @@ const actions={
             const detailInfo = result.data;
             //更新数据
             commit('GETDETAILINFO',detailInfo)
+        }
+    },
+    //添加商品到购物车
+    async addToCart({commit},{skuId,skuNum,callback}){
+        //获取请求结果
+        console.log(commit,skuId,skuNum);
+        const result = await reqAddToCart(skuId,skuNum);
+        if(result.code === 200){//只做简单确认是否发生成功的功能
+            console.log('添加购物车成功');
+            callback();
+        }else{
+            console.log('购物车添加失败');
+            callback('添加购物车失败')
+        }
+    },
+    async addToCart2({commit},{skuId,skuNum}){
+        //获取请求结果
+        console.log(commit,skuId,skuNum);
+        const result = await reqAddToCart(skuId,skuNum);
+        if(result.code === 200){//只做简单确认是否发生成功的功能
+            console.log('添加购物车成功');
+            return '' //async addToCart3函数是成功的
+        }else{
+            console.log('购物车添加失败');
+            return '添加购物车失败' //async addToCart3函数是成功的
+        }
+    },
+    async addToCart3({commit},{skuId,skuNum}){
+        //获取请求结果
+        console.log(commit,skuId,skuNum);
+        const result = await reqAddToCart(skuId,skuNum);
+        if(result.code === 200){//只做简单确认是否发生成功的功能
+            console.log('添加购物车成功');
+            return '' //async addToCart3函数是成功的
+        }else{
+            console.log('购物车添加失败');
+            throw new Error('添加失败');
         }
     }
 }
@@ -41,6 +78,12 @@ const getters={
     skuImageList(state){//图片列表是个数组,所以此处要返回数组才可以
         const skuInfo = state.detailInfo.skuInfo;
         return skuInfo? skuInfo.skuImageList : [];
+    },
+    //右侧属性选择
+    spuSaleAttrList(state){
+        const skuInfo = state.detailInfo.spuSaleAttrList;
+        console.log( skuInfo);
+        return skuInfo? skuInfo : [];
     }
 }
 

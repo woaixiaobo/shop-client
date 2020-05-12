@@ -51,3 +51,6 @@ export const reqProduct=(skuId)=>ajax({
     method:'GET',
     url:`/item/${skuId}`,
 })
+
+//添加购物车数据
+export const reqAddToCart=(skuId,skuNum)=>ajax.post(`/cart/addToCart/${skuId}/${skuNum}`)

@@ -21,10 +21,10 @@
       bigUrl: String,
       imgUrl: String
     },
-    mounted() {
+    mounted() {//这样宽度只取一次
       //因为mask初始是隐藏的,所以获取不到,但是event div的大小和mask是一样的 而且是显示的
       // this.maskWidth = this.$refs.mask.clientWidth;
-      this.maskWidth = this.$refs.event.clientWidth/2;
+      this.maskWidth = this.$refs.event.clientWidth/2;  //mask的宽度是event的一半
     },
     methods: {
       move(event){
