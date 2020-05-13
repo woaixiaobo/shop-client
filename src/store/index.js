@@ -7,6 +7,7 @@ import home from "./modules/home"
 import user from "./modules/user"
 import search from "./modules/search"
 import detail from "./modules/detail"
+import shopCart from "./modules/shopCart"
 //聲明使用插件
 Vue.use(Vuex);
 
@@ -39,5 +40,6 @@ export default new Vuex.Store({
         user,
         search,
         detail,
+        shopCart,
     }
 })

@@ -9,7 +9,7 @@ import axios from "axios"
 //引入加载进度条包
 import NProgress from "nprogress"  //默认引入的是js文件
 import 'nprogress/nprogress.css'  //引入css文件时要声明是css文件
-
+import store from "@/store"
 //第一步配置通用的基础路径和超时
 const instance = axios.create({
     baseURL:'/api',//基础路径
@@ -21,6 +21,8 @@ instance.interceptors.request.use(config=>{
     // console.log('请求拦截器');
     //开启进度条
     NProgress.start();
+    /* 每次请求都携带一个userTempId请求头, 数据值在state中 */
+    config.headers.userTempId=store.state.user.userTempId;
     //返回请求的内容
     return config;
 })
