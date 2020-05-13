@@ -1,4 +1,4 @@
-import {reqProduct,reqAddToCart} from '@/api'
+import {reqProduct} from '@/api'
 
 //数据管理
 const state={
@@ -16,43 +16,7 @@ const actions={
             commit('GETDETAILINFO',detailInfo)
         }
     },
-    //添加商品到购物车
-    async addToCart({commit},{skuId,skuNum,callback}){
-        //获取请求结果
-        console.log(commit,skuId,skuNum);
-        const result = await reqAddToCart(skuId,skuNum);
-        if(result.code === 200){//只做简单确认是否发生成功的功能
-            console.log('添加购物车成功');
-            callback();
-        }else{
-            console.log('购物车添加失败');
-            callback('添加购物车失败')
-        }
-    },
-    async addToCart2({commit},{skuId,skuNum}){
-        //获取请求结果
-        console.log(commit,skuId,skuNum);
-        const result = await reqAddToCart(skuId,skuNum);
-        if(result.code === 200){//只做简单确认是否发生成功的功能
-            console.log('添加购物车成功');
-            return '' //async addToCart3函数是成功的
-        }else{
-            console.log('购物车添加失败');
-            return '添加购物车失败' //async addToCart3函数是成功的
-        }
-    },
-    async addToCart3({commit},{skuId,skuNum}){
-        //获取请求结果
-        console.log(commit,skuId,skuNum);
-        const result = await reqAddToCart(skuId,skuNum);
-        if(result.code === 200){//只做简单确认是否发生成功的功能
-            console.log('添加购物车成功');
-            return '' //async addToCart3函数是成功的
-        }else{
-            console.log('购物车添加失败');
-            throw new Error('添加失败');
-        }
-    }
+    
 }
 
 //更新数据

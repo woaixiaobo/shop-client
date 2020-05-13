@@ -68,7 +68,7 @@ isChecked: 新的选中状态值  0代表取消选中 / 1代表选中
 export const reqCheckCartItem=(skuId,isChecked)=>ajax(`/cart/checkCart/${skuId}/${isChecked}`)
 
 //删除购物车数据
-export const reqDeleteCartItem=(skuId)=>ajax.delete(`/cart/checkCart/${skuId}`)
+export const reqDeleteCartItem=(skuId)=>ajax.delete(`/cart/deleteCart/${skuId}`)
 // export const reqDeleteCartItem=(skuId)=>ajax({
 //     url:`/cart/checkCart/${skuId}`,
 //     method:'DELETE'
