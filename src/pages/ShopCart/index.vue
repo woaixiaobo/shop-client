@@ -31,7 +31,7 @@
             <a href="javascript:void(0)" class="mins" @click="changeItemNum(item,-1)">-</a>
             <input autocomplete="off" type="text" 
             :value="item.skuNum" minnum="1" class="itxt"
-            @change="changeItemNum(item,$event.target.value - item.skuNum)"
+            @change="changeItemNum(item,$event.target.value - item.skuNum,$event)"
             >
             <a href="javascript:void(0)" class="plus" @click="changeItemNum(item,1)">+</a>
           </li>
@@ -134,17 +134,21 @@ import {mapState,mapGetters} from "vuex"
       }
     },
     //改变购物项数量
-    async changeItemNum(item,numChange){
-      try {
-        //如果修改后的数量小于1,就return,不在发送请求
-        if(item.skuNum + numChange<1) return
-        //调用异步的actions
-        await this.$store.dispatch('addToCart3',{skuId:item.skuId,skuNum:numChange});
-        //重新请求列表数据,来更新数据和页面
-        this.$store.dispatch('getCartLit');
-      } catch (error) {
-        alert(error);
+    async changeItemNum(item,numChange,event){
+       //如果修改后的数量大于0才更新
+      if(item.skuNum + numChange>0){
+          try {
+          //调用异步的actions
+          await this.$store.dispatch('addToCart3',{skuId:item.skuId,skuNum:numChange});
+          //重新请求列表数据,来更新数据和页面
+          this.$store.dispatch('getCartLit');
+        } catch (error) {
+          alert(error);
+        }
+      }else{
+        event.target.value = item.skuNum;
       }
+      
     },
     //删除当前商品信息
     async delCart(skuId){
