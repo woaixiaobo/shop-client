@@ -112,6 +112,7 @@ const actions={
         //遍历所有的购物项,判断出选中的购物项
         state.cartList.forEach(item=>{
             if(item.isChecked===1){
+                //取出每一项的skuId 进行deleteCart的传参
                 const skuId = item.skuId
                 //发送api请求
                 const promise =dispatch('deleteCart',skuId);

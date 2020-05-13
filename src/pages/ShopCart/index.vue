@@ -145,7 +145,7 @@ import {mapState,mapGetters} from "vuex"
         } catch (error) {
           alert(error);
         }
-      }else{
+      }else{//当输入的不是数字时,不需要更新,且值为原本的值
         event.target.value = item.skuNum;
       }
       
@@ -165,7 +165,8 @@ import {mapState,mapGetters} from "vuex"
     async delAllCart(cartList){
       cartList.forEach(async ()=>{
           try {
-          //发送删除的actions异步
+          //发送删除的actions异步,
+          //因为deleteAllCart当中又调用了删除单个商品的dispatch所以此处不带参数
           await this.$store.dispatch('deleteAllCart');
           //成功时,重新获取列表
           this.$store.dispatch('getCartLit');
