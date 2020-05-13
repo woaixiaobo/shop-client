@@ -1,8 +1,12 @@
 <template>
+<!-- ref标识这个元素 -->
   <div class="swiper-container" ref="swiper">
     <div class="swiper-wrapper" >
+      <!-- 遍历  skuImageList图片数组的长度,打到对应个数的div-->
       <div class="swiper-slide" v-for="(item, index) in skuImageList" :key="item.id">
-        <img :src="item.imgUrl" :class="{active:currentIndex===index}" @click="changeCurrent(index)">
+        <!-- 下侧小图,并添加点击换色,而且通知父组件更新对应下标的上侧大图 -->
+        <img :src="item.imgUrl" :class="{active:currentIndex===index}" 
+        @click="changeCurrent(index)">
       </div>
     </div>
     <div class="swiper-button-next"></div>

@@ -410,7 +410,13 @@
 
         try {
           await this.$store.dispatch('addToCart3',{skuId,skuNum})
-          alert('添加成功');
+          //跳转前将数据缓存到浏览器,因为数据比较多,再用params和query的形式传递不太好
+           // 向sessionStorage中保存skuInfo ,然后在添加成功的页面使用缓存的数据
+          window.sessionStorage.setItem('SKU_INFO_KEY',JSON.stringify(this.skuInfo));
+          this.$router.push({//跳转到添加成功购物车页面
+            path: '/addcartsuccess',
+            query:{skuNum}
+          })
         } catch (error) {
           alert(error)
         }
