@@ -17,3 +17,14 @@ export function getUserTempId(){
     }
     return userTempId;
 }
+
+//保存用户登录信息
+export function saveUserInfo(userInfo){
+    localStorage.setItem('USER_INFO_KEY',JSON.stringify(userInfo));
+}
+
+//保读取用户登录信息
+export function getUserInfo(){
+    //因为是读取,所以此处要返回这个值,并且转化为json对象
+    return JSON.parse(localStorage.getItem('USER_INFO_KEY')) || {};
+}

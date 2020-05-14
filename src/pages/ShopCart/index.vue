@@ -97,7 +97,7 @@ import {mapState,mapGetters} from "vuex"
            //全选时,所有的值都为1,some就会返回undefined
           // return !this.cartList.some(item=>item.isChecked!==1);
           //6.用every方法,全部的值都符合时为true
-          return this.cartList.every(item=>item.isChecked===1)
+          return this.cartList.every(item=>item.isChecked===1)&&this.cartList.length!==0
 
         },
         async set(val){//当勾选状态发生改变时,就发生请求

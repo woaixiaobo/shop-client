@@ -10,17 +10,6 @@ export function reqBaseCategoryList(){
     /// return ajax.get('/product/getBaseCategoryList')
 }
 
-//请求登录
-export function reqLogin(mobile, password){
-    //默认的响应体数据是json格式
-    return ajax({
-        method:'POST',
-        url:'/user/passport/login',
-        data:{mobile, password}
-    })
-    // return ajax.post('/user/passport/login', {mobile, password})
-}
-
 //暴露mock接口的ajax
 export const reqBanners =() =>mockAjax('/banners')
 export const reqFloors =() =>mockAjax('/floors')
@@ -73,3 +62,21 @@ export const reqDeleteCartItem=(skuId)=>ajax.delete(`/cart/deleteCart/${skuId}`)
 //     url:`/cart/checkCart/${skuId}`,
 //     method:'DELETE'
 // })
+
+
+//请求登录
+export function reqLogin(mobile, password){
+    //默认的响应体数据是json格式
+    return ajax({
+        method:'POST',
+        url:'/user/passport/login',
+        data:{mobile, password}
+    })
+    // return ajax.post('/user/passport/login', {mobile, password})
+}
+
+//请求注册
+export const reqRegister=(userInfo)=>ajax.post('/user/passport/register', userInfo)
+
+//退出登录
+export const reqLogout = () => ajax('/user/passport/logout')
