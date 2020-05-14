@@ -173,7 +173,7 @@ import {mapState} from "vuex"
                 localStorage.removeItem('USER_INFO_KEY');
                 //重新请求页面
                 this.$router.replace('/');
-                //并且刷新页面
+                //并且刷新页面,
                 console.log(location.reload());
             }
         },
