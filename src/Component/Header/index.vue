@@ -8,7 +8,8 @@
                     <p>尚品汇欢迎您！</p>
                     <p v-if="userInfo.name">
                         <span>{{userInfo.nickName}}</span>
-                        <a href="javascript:">登出</a>
+                        &nbsp;
+                        <a href="javascript:" @click="LogOut">退出</a>
                     </p>
                     <p v-else>
                         <span>请</span>
@@ -159,6 +160,21 @@ import {mapState} from "vuex"
                 //         name:this.keyName
                 //     }
                 // })
+            },
+            //退出登录
+            LogOut(){
+                /**
+                 * 1.首先退出登录,就会把userInfo的信息置为空,但是在此刷新时,又会读取本地缓存
+                 *      所以一旦点击退出登录便把本地缓存的用户信息 userInfo清除掉
+                 * 2.退出登录后左上角显示的便不再是用户的信息,而且登录注册等信息,所以要进行元素的切换
+                 * 3.一旦用户信息为空那么用户的标识 token自然就会消失,从而转变为 临时Id
+                 */
+                //清除本地缓存
+                localStorage.removeItem('USER_INFO_KEY');
+                //重新请求页面
+                this.$router.replace('/');
+                //并且刷新页面
+                console.log(location.reload());
             }
         },
     }
