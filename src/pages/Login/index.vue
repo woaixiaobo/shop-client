@@ -14,25 +14,37 @@
           </ul>
 
           <div class="content">
-            <form action="##" @submit.prevent="login">
-              <div class="input-text clearFix">
-                <span></span>
-                <input type="text" placeholder="手机号" v-model="mobile">
-              </div>
-              <div class="input-text clearFix">
-                <span class="pwd"></span>
-                <input type="text" placeholder="请输入密码" v-model="password">
-              </div>
-              <div class="setting clearFix">
-                <label class="checkbox inline">
-                  <input name="m1" type="checkbox" value="2" checked="">
-                  自动登录
-                </label>
-                <span class="forget">忘记密码？</span>
-              </div>
-              <button class="btn">登&nbsp;&nbsp;录</button>
-            </form>
-
+            <ValidationObserver ref="userForm">
+              <form action="##" @submit.prevent="login">
+                <div class="input-text clearFix">
+                  <span class="phone"></span>
+                  <ValidationProvider name="手机号" :rules="{required: true, regex: /^1\d{10}$/}">
+                    <template slot-scope="{errors, classes}">
+                      <input type="text" placeholder="手机号" v-model="mobile" :class="classes">
+                      <span class="error-msg">{{errors[0]}}</span>
+                    </template>
+                  </ValidationProvider>
+                </div>
+                <div class="input-text clearFix">
+                  <span class="pwd"></span>
+                  <!-- <input type="text" placeholder="请输入密码" v-model="password"> -->
+                  <ValidationProvider name="密码" :rules="{required: true, min: 6, max: 10}">
+                    <template slot-scope="{ errors, classes }">
+                      <input type="password" placeholder="请输入你的登录密码" v-model="password" :class="classes">
+                      <span class="error-msg">{{ errors[0] }}</span>
+                    </template>
+                </ValidationProvider>
+                </div>
+                <div class="setting clearFix">
+                  <label class="checkbox inline">
+                    <input name="m1" type="checkbox" value="2" checked="">
+                    自动登录
+                  </label>
+                  <span class="forget">忘记密码？</span>
+                </div>
+                <button class="btn">登&nbsp;&nbsp;录</button>
+              </form>
+            </ValidationObserver>
             <div class="call clearFix">
               <ul>
                 <li><img src="./images/qq.png" alt=""></li>
@@ -43,6 +55,7 @@
               <router-link class="register" to="/register">立即注册</router-link>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
@@ -75,7 +88,8 @@
       }
     },
     methods: {
-      async login(){
+      //未加vee表单验证
+      /**async login(){
         //获取输入的数据
         const {mobile,password} = this;
         try {
@@ -95,6 +109,32 @@
         } catch (error) {
           console.log(error.message);
         }
+      },*/
+      async login(){
+        this.$refs.userForm.validate().then(async (success) => {
+          if (!success) {
+            return;
+          }
+           //获取输入的数据
+            const {mobile,password} = this;
+            try {
+              //发送登录请求
+              await this.$store.dispatch('login',{mobile,password});
+              //取出 redirect 参数
+              const redirect = this.$route.query.redirect;
+              //如果存在则跳转到指定页面
+              if(redirect){
+                console.log(redirect);
+                this.$router.replace(redirect)
+              }else{
+                //登录成功并跳转到首页
+                this.$router.replace('/')
+              }
+              
+            } catch (error) {
+              console.log(error.message);
+            }
+        })
       },
     },
     //路由前置守卫
@@ -174,7 +214,6 @@
           border: 1px solid #ddd;
           border-top: none;
           padding: 18px;
-
           form {
             margin: 15px 0 18px 0;
             font-size: 12px;
@@ -182,8 +221,9 @@
 
             .input-text {
               margin-bottom: 16px;
+              position: relative;
 
-              span {
+              .phone ,.pwd{
                 float: left;
                 width: 37px;
                 height: 32px;
@@ -196,7 +236,12 @@
               .pwd {
                 background-position: -72px -201px;
               }
-
+              .error-msg {
+                position: absolute;
+                top: 100%;
+                left: 5px;
+                color: red;
+              }
               input {
                 width: 302px;
                 height: 32px;

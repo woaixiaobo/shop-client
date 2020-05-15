@@ -8,65 +8,67 @@
           <router-link to="/login">登陆</router-link>
         </span>
       </h3>
-      <div class="content">
-        <label>手机号:</label>
-        <input type="text"
-        placeholder="请输入你的手机号" 
-        v-model="mobile" 
-        v-validate="'required|numeric||max:11'" name="手机号"
-        > 
-        <!-- <input type="text"
-        placeholder="请输入你的手机号" 
-        v-model="mobile" 
-        v-validate="'customReg'" name="手机号"
-        >  -->
-        <span class="color-red">{{ errors.first('手机号') }}</span>
-        <!-- <span class="error-msg">错误提示信息</span> -->
-      </div>
-      <div class="content">
-        <label>验证码:</label>
-        <input type="text" placeholder="请输入验证码" v-model="code" 
-            v-validate="'required|code'" name="验证码"
-        >
-        <!-- 图片对应的请求跨域是没有问题的,它是普通的http请求,只有ajax跨域才会有问题 -->
-        <!-- <img ref="code" src="http://182.92.128.115/api/user/passport/code" alt="code"> -->
+      <ValidationObserver ref="form">
+        <form>
+          <div class="content">
+            <label>手机号:</label>
+            <ValidationProvider name="手机号" :rules="{required: true, regex: /^1\d{10}$/}">
+                <template slot-scope="{errors, classes}">
+                  <input type="text" placeholder="请输入你的手机号" v-model="mobile" :class="classes">
+                  <span class="error-msg">{{errors[0]}}</span>
+                </template>
+            </ValidationProvider>
+          </div>
+          <div class="content">
+            <label>验证码:</label>
+            <ValidationProvider name="验证码" :rules="{required: true, regex: /^.{4}$/}">
+                <template slot-scope="{errors, classes}">
+                  <input type="text" placeholder="请输入验证码" v-model="code" :class="classes">
+                  <!-- 图片对应的请求跨域是没有问题的,它是普通的http请求,只有ajax跨域才会有问题 -->
+                  <!-- <img ref="code" src="http://182.92.128.115/api/user/passport/code" alt="code"> -->
 
-        <!-- 此时是给当前服务器发送请求,当时当前服务器有以api开头的代理服务器,代理会转发这个请求 -->
-        <!-- 点击这个图片时,重新发送获取图片的请求,来更新图片,页面不会刷新 -->
-        <img ref="code" src="/api/user/passport/code" alt="code" @click="updateCode">
-        <!-- <span class="error-msg">错误提示信息</span> -->
-        <a href="javascript:" @click="updateCode">换一个</a>
-        <span class="color-red">{{ errors.first('验证码') }}</span>
-
-      </div>
-      <div class="content">
-        <label>登录密码:</label>
-        <input type="text" 
-        placeholder="请输入你的登录密码" 
-        v-model="password"
-        v-validate="'customReg'" name="密码"
-        >
-        <span class="color-red">{{ errors.first('密码') }}</span>
-        <!-- <span class="error-msg">错误提示信息</span> -->
-      </div>
-      <div class="content">
-        <label>确认密码:</label>
-        <input type="text" placeholder="请输入确认密码" v-model="password2"
-        v-validate="{ is: password }" name="确认密码"
-        >
-        <span class="color-red">{{ errors.first('确认密码') }}</span>
-        <!-- <span class="error-msg">错误提示信息</span> -->
-      </div>
-      <div class="controls">
-        <input name="m1" type="checkbox" v-model="isAgree">
-        <span>同意协议并注册《尚品汇用户协议》</span>
-        <!-- <span class="error-msg">错误提示信息</span> -->
-      </div>
-      <div class="btn">
-        <button @click="register">完成注册</button>
-      </div>
+                  <!-- 此时是给当前服务器发送请求,当时当前服务器有以api开头的代理服务器,代理会转发这个请求 -->
+                  <!-- 点击这个图片时,重新发送获取图片的请求,来更新图片,页面不会刷新 -->
+                  <img ref="code" src="/api/user/passport/code" alt="code" @click="updateCode">
+                  <a href="javascript:" @click="updateCode">换一个</a>
+                  <span class="error-msg">{{ errors[0] }}</span>
+                </template>
+              </ValidationProvider>
+          </div>
+          <div class="content">
+            <label>登录密码:</label>
+            <ValidationProvider name="密码" :rules="{required: true, min: 6, max: 10}">
+                <template slot-scope="{ errors, classes }">
+                  <input type="password" placeholder="请输入你的登录密码" v-model="password" :class="classes">
+                  <span class="error-msg">{{ errors[0] }}</span>
+                </template>
+            </ValidationProvider>
+          </div>
+          <div class="content">
+            <label>确认密码:</label>
+            <ValidationProvider name="确认密码" :rules="{required: true, is: password}">
+                <template slot-scope="{ errors,classes}">
+                  <input type="password" placeholder="请输入确认密码" v-model="password2" :class="classes">
+                  <span class="error-msg">{{ errors[0] }}</span>
+                </template>
+            </ValidationProvider>
+          </div>
+          <div class="controls">
+            <ValidationProvider name="协议" :rules="{oneOf: [true]}">
+                <template slot-scope="{ errors,classes}">
+                  <input name="m1" type="checkbox" v-model="isAgree" :class="classes">
+                  <span>同意协议并注册《尚品汇用户协议》</span>
+                  <span class="error-msg">{{errors[0]}}</span>
+                </template>
+            </ValidationProvider>
+          </div>
+          <div class="btn">
+            <button @click.prevent="register">完成注册</button>
+          </div>
+        </form>
+    </ValidationObserver>
     </div>
-
+    
     <!-- 底部 -->
     <div class="copyright">
       <ul>
@@ -107,30 +109,36 @@
         // this.$refs.code.src='/api/user/passport/code?time=' + Date.now();
       },
       //完成注册
-      async register(){
-        //取出输入的数据
-        const {mobile,code,password,password2,isAgree} = this;
-        //进行前台表单验证,如果不符合则不发送注册请求,并提示相关错误
-        if(!isAgree){//如果不同意协议,则不通过
-          alert('必须同意');
-          return;
-        }else if(password===''||password!==password2){
-          //如果两次输入的密码不一致,或者为空,也不通过
-          alert('两次密码必须相同');
-          return;
-        }
-        try {
-          //前台验证通过就发生注册请求
-          await this.$store.dispatch('register',{mobile,code,password});
-          //注册成功并跳转到登录页面
-          this.$router.replace('/login')
-        } catch (error) {//注册为成功的话,提示错误,在重新更新验证码,并清除验证码输入框
-          this.updateCode();
-          //清除输入框数据
-          this.code='';
-          //提示错误信息
-          alert(error.message);
-        }
+      register(){
+        this.$refs.form.validate().then(async (success) => {
+          if (!success) {
+            return;
+          }
+           //取出输入的数据
+          const {mobile,code,password} = this;
+          // const {mobile,code,password,password2,isAgree} = this;
+          //进行前台表单验证,如果不符合则不发送注册请求,并提示相关错误
+          // if(!isAgree){//如果不同意协议,则不通过
+          //   alert('必须同意');
+          //   return;
+          // }else if(password===''||password!==password2){
+          //   //如果两次输入的密码不一致,或者为空,也不通过
+          //   alert('两次密码必须相同');
+          //   return;
+          // }
+          try {
+            //前台验证通过就发生注册请求
+            await this.$store.dispatch('register',{mobile,code,password});
+            //注册成功并跳转到登录页面
+            this.$router.replace('/login')
+          } catch (error) {//注册为成功的话,提示错误,在重新更新验证码,并清除验证码输入框
+            this.updateCode();
+            //清除输入框数据
+            this.code='';
+            //提示错误信息
+            alert(error.message);
+          }
+        })
 
       }
     },

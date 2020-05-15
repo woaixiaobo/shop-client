@@ -20,7 +20,7 @@ import './mock/mockServer'
 //全局引入swiper的样式
 import 'swiper/css/swiper.min.css'
 //引入表单验证
-import './validate'
+import './validate.js'
 new Vue({
   render: h => h(App),
   router,

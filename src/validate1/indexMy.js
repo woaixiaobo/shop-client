@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import VeeValidate, {
-    Validator
+    Validator,ValidationProvider,ValidationObserver
 } from 'vee-validate';
 import zh_CN from 'vee-validate/dist/locale/zh_CN'; //引入中文包，提示信息可以以中文形式显示
 import VueI18n from 'vue-i18n';
@@ -42,3 +42,6 @@ Validator.localize("zh_CN", {
     },
 })
 
+// 注册用于校验的组件
+Vue.component('ValidationProvider', ValidationProvider) // 用于输入过程中实时校验
+Vue.component('ValidationObserver', ValidationObserver) // 用于点击按钮时统一校验
