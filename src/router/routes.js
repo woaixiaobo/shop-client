@@ -35,7 +35,7 @@ export default [{
         path: '/addcartsuccess',
         component: AddCartSuccess,
         beforeEnter:(to,from,next)=>{
-            console.log(to.query.skuNum);
+            console.log(JSON.parse(sessionStorage.getItem('SKU_INFO_KEY')));
             if(JSON.parse(sessionStorage.getItem('SKU_INFO_KEY'))&&to.query.skuNum){
                 //只有携带的skuNum以及sessionStorage中有skuInfo数据, 才能查看添加购物车成功的界面
                 next();

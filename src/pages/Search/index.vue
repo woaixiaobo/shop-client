@@ -103,8 +103,8 @@
                                         <i class="command">已有<span>2000</span>人评价</i>
                                     </div>
                                     <div class="operate">
-                                        <a href="success-cart.html" target="_blank"
-                                            class="sui-btn btn-bordered btn-danger">加入购物车</a>
+                                        <a href="javascript:"
+                                            class="sui-btn btn-bordered btn-danger" @click="addToCart(good.id)">加入购物车</a>
                                         <a href="javascript:void(0);" class="sui-btn btn-bordered">收藏</a>
                                     </div>
                                 </div>
@@ -127,7 +127,7 @@
 
 <script>
     import SearchSelector from './SearchSelector/SearchSelector'
-    import {mapState} from 'vuex'
+    import {mapState,mapGetters} from 'vuex'
     export default {
         name: 'Search',
         data() {
@@ -144,14 +144,17 @@
                     order: '1:desc', // 排序方式  1: 综合,2: 价格 asc: 升序,desc: 降序  示例: "1:desc"
                     pageNo: 1, // 当前页码
                     pageSize: 5, // 每页数量
-                }
+                },
+                skuNum:1,
             }
         },
         computed: {
             //获取vuex当中state数据
             ...mapState({
-                productList:state=>state.search.productList
+                productList:state=>state.search.productList,
+                detailInfo:state=>state.detail.detailInfo,
             }),
+            ...mapGetters(['skuInfo']),
             //计算排序图标的类名
             orderIcon(){
                 return this.options.order.split(':')[1]==='desc'?'icondown' : 'iconup'
@@ -181,6 +184,25 @@
         },
         
         methods:{
+            async addToCart(id){
+                //取出商品的ID (就是点击图片跳转时所用的id)  与数量 (data当中的响应式数据skuNum)
+                const skuId = id;
+                const skuNum = this.skuNum;
+                try {
+                await this.$store.dispatch('addToCart3',{skuId,skuNum})
+                await this.$store.dispatch('getDetailInfo', skuId)
+                //跳转前将数据缓存到浏览器,因为数据比较多,再用params和query的形式传递不太好
+                // 向sessionStorage中保存skuInfo ,然后在添加成功的页面使用缓存的数据
+                window.sessionStorage.setItem('SKU_INFO_KEY',JSON.stringify(this.skuInfo));
+                this.$router.push({//跳转到添加成功购物车页面
+                    path: '/addcartsuccess',
+                    query:{skuNum}
+                })
+                } catch (error) {
+                alert(error)
+                }
+
+            },
             //异步获取指定页码的商品分页数据，默认为第一页
             getProductList(pageNo=1){
                 //跟新options当中的pageNo(当点击下边的页码时，
