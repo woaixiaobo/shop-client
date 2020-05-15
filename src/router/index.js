@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import routes from "./routes"
 Vue.use(VueRouter); //使用插件
-
+import store from '@/store'
 
 //修正Vue原型上边的push和replace
 
@@ -43,7 +43,7 @@ VueRouter.prototype.replace=function(location, onComplete, onAbort){
         })
     }
 }
-export default new VueRouter({
+const router= new VueRouter({
     mode:'history',
     routes,
     // scrollBehavior (to, from, savedPosition) {
@@ -53,3 +53,26 @@ export default new VueRouter({
         return { x: 0, y: 0 }  // 在跳转路由时, 滚动条自动滚动到x轴和y轴的起始位置
     }
 })
+
+//跳转前需要验证是否登录的路由的数组
+const checkPaths = ['/trade', '/pay', '/center']  // 所有以它开头的路径都需要检查
+
+//只有登录了才能查看 交易/支付/个人中心界面   对应了多个路由,所以用全局前置守卫
+router.beforeEach((to,from,next)=>{//在页面跳转前回调
+    const targetPath = to.path;  //有可能是二级目录 例如 /center/myorder
+    //检测目标路由是否需要进行登录检查
+    const isCheckPath = checkPaths.find(path=>targetPath.indexOf(path)===0);
+    if(isCheckPath){
+        //查看vuex的用户登录信息是否存在,如果存在则是已经登录,便放行
+        if(store.state.user.userInfo.name){
+            next();
+        }else{//如果没有登录,则跳转到登录页面
+            next('/login?redirect=' + targetPath);
+            // console.log('/login?redirect=' + targetPath);
+        }
+    }else{//如果不是路由目标,则直接放行
+        next();
+    }
+})
+
+export default router;

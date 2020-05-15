@@ -22,15 +22,13 @@ instance.interceptors.request.use(config=>{
     // console.log('请求拦截器');
     //开启进度条
     NProgress.start();
-    //判断如果用户登录了,就用用户的token标识
+     /* 每次请求都携带一个userTempId请求头, 数据值在state中 */
+        config.headers.userTempId=store.state.user.userTempId;
+     //返回请求的内容
+    //判断如果用户登录了,就在携带用户的token标识
     if(store.state.user.userInfo.name){
-        console.log('11');
         /* 每次请求都携带一个token请求头, 数据值在state中 */
         config.headers.token=store.state.user.userInfo.token;
-    }else{//未登录就用临时ID
-         /* 每次请求都携带一个userTempId请求头, 数据值在state中 */
-        config.headers.userTempId=store.state.user.userTempId;
-        //返回请求的内容
     }
     return config;
 })

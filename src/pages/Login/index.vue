@@ -81,13 +81,37 @@
         try {
           //发送登录请求
           await this.$store.dispatch('login',{mobile,password});
-          //登录成功并跳转到首页
-          this.$router.replace('/')
+          //取出 redirect 参数
+          const redirect = this.$route.query.redirect;
+          //如果存在则跳转到指定页面
+          if(redirect){
+            console.log(redirect);
+            this.$router.replace(redirect)
+          }else{
+            //登录成功并跳转到首页
+            this.$router.replace('/')
+          }
+          
         } catch (error) {
           console.log(error.message);
         }
-      }
+      },
     },
+    //路由前置守卫
+      beforeRouteEnter(to,from,next){
+        // 给next()传入一个回调函数, 那回调函数在组件对象创建后自动调用, 且会传入创建的组件对象
+        next((component)=>{
+          if(!component.$store.state.user.userInfo.token){
+            //如果未登录,放行
+            console.log('1');
+            next();
+          }else{
+            //如果登录了,就跳转到首页
+            console.log('2');
+            next('/');
+          }
+        })
+      }
   }
 </script>
 
