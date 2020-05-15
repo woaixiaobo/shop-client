@@ -8,6 +8,9 @@ import store from '@/store'
 import TypeNav from "@/Component/TypeNav";
 import Carousel from "@/Component/Carousel"
 import Pagination from "@/Component/Pagination"
+import * as API from "@/api" //引入所有接口函数,并添加到API对象当中
+//给vue的原型对象添加方法来储存API对象,这样所有的组件都可以使用api,就不用每个组件都引入api了
+Vue.prototype.$API = API;
 // 注册全局组件
 Vue.component('TypeNav', TypeNav)
 Vue.component('Carousel',Carousel)

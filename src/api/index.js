@@ -80,3 +80,7 @@ export const reqRegister=(userInfo)=>ajax.post('/user/passport/register', userIn
 
 //退出登录
 export const reqLogout = () => ajax('/user/passport/logout')
+
+//获取订单数
+//page 当前页码  limit每页的数量
+export const reqMyOrders=(page, limit)=>ajax(`/order/auth/${page}/${limit}`)
