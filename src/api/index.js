@@ -84,3 +84,20 @@ export const reqLogout = () => ajax('/user/passport/logout')
 //获取订单数
 //page 当前页码  limit每页的数量
 export const reqMyOrders=(page, limit)=>ajax(`/order/auth/${page}/${limit}`)
+
+//获取订单交易详情   注意:此时是后台
+export const reqTradeInfo = ()=>ajax('/order/auth/trade')
+
+//提交订单
+export const reqSubmitOrder = (tradeNo,orderInfo)=>ajax({
+    url: '/order/auth/submitOrder',
+    method:'POST',
+    params:{tradeNo}, //此处的params是ajax请求的query参数
+    data:orderInfo, //请求体是数据,包含的当前的订单信息
+})
+
+//获取订单支付信息
+export const reqPayInfo = (orderId)=> ajax(`/payment/weixin/createNative/${orderId}`)
+
+//查询订单支付状态
+export const reqOrderStatus = (orderId)=> ajax(`/payment/weixin/queryPayStatus/${orderId}`)

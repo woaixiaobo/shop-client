@@ -21,6 +21,8 @@ import './mock/mockServer'
 import 'swiper/css/swiper.min.css'
 //引入表单验证
 import './validate.js'
+//引入element ui
+import './elements'
 new Vue({
   render: h => h(App),
   router,

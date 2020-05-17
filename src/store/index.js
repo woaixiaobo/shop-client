@@ -8,6 +8,7 @@ import user from "./modules/user"
 import search from "./modules/search"
 import detail from "./modules/detail"
 import shopCart from "./modules/shopCart"
+import order from "./modules/order"
 //聲明使用插件
 Vue.use(Vuex);
 
@@ -41,5 +42,6 @@ export default new Vuex.Store({
         search,
         detail,
         shopCart,
+        order,
     }
 })

@@ -110,7 +110,7 @@
           console.log(error.message);
         }
       },*/
-      async login(){
+      async login(){//点击登录按钮登录
         this.$refs.userForm.validate().then(async (success) => {
           if (!success) {
             return;

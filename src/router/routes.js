@@ -63,6 +63,8 @@ export default [{
     {
         path: '/pay',
         component: Pay,
+        //将route当中的query参数改为props的方式传递
+        props:route=>({orderId:route.query.orderId}),
         beforeEnter:(to,from,next)=>{
             if(from.path==='/trade'){//只有从交易页面才能跳转到交易成功页面
                 next();

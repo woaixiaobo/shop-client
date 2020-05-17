@@ -3,30 +3,16 @@
     <h3 class="title">填写并核对订单信息</h3>
     <div class="content">
       <h5 class="receive">收件人信息</h5>
-      <div class="address clearFix">
-        <span class="username selected">张三</span>
+      <div class="address clearFix" v-for="(address) in tradeInfo.userAddressList" 
+      :key="address.id" @click="selectedAddr=address">
+        <span class="username" :class="{selected:address===selectedAddr}">{{address.consignee}}</span>
         <p>
-          <span class="s1">北京市昌平区宏福科技园综合楼6层</span>
-          <span class="s2">15010658793</span>
-          <span class="s3">默认地址</span>
+          <span class="s1">{{address.userAddress}}</span>
+          <span class="s2">{{address.phoneNum}}</span>
+          <span class="s3" v-if="address.isDefault==='1'">默认地址</span>
         </p>
       </div>
-      <div class="address clearFix">
-        <span class="username selected">李四</span>
-        <p>
-          <span class="s1">北京市昌平区宏福科技园综合楼6层</span>
-          <span class="s2">13590909098</span>
-          <span class="s3">默认地址</span>
-        </p>
-      </div>
-      <div class="address clearFix">
-        <span class="username selected">王五</span>
-        <p>
-          <span class="s1">北京市昌平区宏福科技园综合楼6层</span>
-          <span class="s2">18012340987</span>
-          <span class="s3">默认地址</span>
-        </p>
-      </div>
+      
       <div class="line"></div>
       <h5 class="pay">支付方式</h5>
       <div class="address clearFix">
@@ -45,36 +31,22 @@
       </div>
       <div class="detail">
         <h5>商品清单</h5>
-        <ul class="list clearFix">
+        <ul class="list clearFix" v-for="(item) in tradeInfo.detailArrayList" :key="item.skuId">
           <li>
-            <img src="./images/goods.png" alt="">
+            <img :src="item.imgUrl" alt="" style="width:100px;heigth:100px">
           </li>
           <li>
             <p>
-              Apple iPhone 6s (A1700) 64G 玫瑰金色 移动联通电信4G手机硅胶透明防摔软壳 本色系列</p>
+              {{item.skuName}}</p>
             <h4>7天无理由退货</h4>
           </li>
           <li>
-            <h3>￥5399.00</h3>
+            <h3>{{item.orderPrice}}</h3>
           </li>
-          <li>X1</li>
+          <li>X{{item.skuNum}}</li>
           <li>有货</li>
         </ul>
-        <ul class="list clearFix">
-          <li>
-            <img src="./images/goods.png" alt="">
-          </li>
-          <li>
-            <p>
-              Apple iPhone 6s (A1700) 64G 玫瑰金色 移动联通电信4G手机硅胶透明防摔软壳 本色系列</p>
-            <h4>7天无理由退货</h4>
-          </li>
-          <li>
-            <h3>￥5399.00</h3>
-          </li>
-          <li>X1</li>
-          <li>有货</li>
-        </ul>
+        
       </div>
       <div class="bbs">
         <h5>买家留言：</h5>
@@ -91,8 +63,8 @@
     <div class="money clearFix">
       <ul>
         <li>
-          <b><i>1</i>件商品，总商品金额</b>
-          <span>¥5399.00</span>
+          <b><i>{{tradeInfo.totalNum}}</i>件商品，总商品金额</b>
+          <span>{{tradeInfo.totalAmount}}</span>
         </li>
         <li>
           <b>返现：</b>
@@ -105,25 +77,90 @@
       </ul>
     </div>
     <div class="trade">
-      <div class="price">应付金额:　<span>¥5399.00</span></div>
+      <div class="price">应付金额:　<span>{{tradeInfo.totalAmount}}</span></div>
       <div class="receiveInfo">
         寄送至:
-        <span>北京市昌平区宏福科技园综合楼6层</span>
-        收货人：<span>张三</span>
-        <span>15010658793</span>
+        <span>{{selectedAddr.userAddress}}</span>
+        收货人：<span>{{selectedAddr.consignee}}</span>
+        <span>{{selectedAddr.phoneNum}}</span>
       </div>
     </div>
     <div class="sub clearFix">
-      <router-link class="subBtn" to="/pay">提交订单</router-link>
+      <a href="javascript:" class="subBtn" @click="submitOrder">提交订单</a>
     </div>
   </div>
 </template>
 
 <script>
+import {mapState} from 'vuex'
   export default {
     name: 'Trade',
+    data() {
+      return {
+        selectedAddr:{},//存放地址的对象,因为要对地址进行操作,所以要写在data当中,
+                              //并且进行监视,因为初始肯定是undefined
+        orderComment:'快发个小妞！'
+      }
+    },
+    computed: {
+      ...mapState({
+        tradeInfo: state => state.order.tradeInfo
+      })
+    },
+    mounted() {//先获取接口信息
+      this.$store.dispatch('getTradeInfo');
+    },
+    watch: {
+      //监视的是tradeInfo内部的地址列表数据
+      //监视对象内部的某个属性
+      'tradeInfo.userAddressList'(value){
+        // 在tradeInfo中的userAddressList中找出isDefault为1的地址对象
+        const selectedAddr = value.find(address=>address.isDefault==='1')
+        //更新data数据
+        this.selectedAddr = selectedAddr;
+      }
+    },
+    methods: {
+      async submitOrder(){
+        //要提交的参数
+        /*tradeNo订单编号和 orderDetailList（在tradeInfo当中为detailArrayList） 
+          多个商品数据对象在tradeInfo当中*/
+          const {tradeNo,detailArrayList} = this.tradeInfo;
+          //用户的地址 姓名  电话 都在tradeInfo.userAddressList当中，
+          //因为是操作这个数据的，所以贮存在了selectedAddr当中方便操作
+          const{userAddress,consignee,phoneNum} = this.selectedAddr;
+          //把所有的数据都封装到一个对象当中
+          const orderInfo={
+            // 地址相关的3个数据,要和接口的数据参数保持相同
+            consignee,
+            consigneeTel: phoneNum,
+            deliveryAddress: userAddress,
+
+            paymentWay: 'ONLINE', // 固定为在线支付
+            orderComment: this.orderComment, // 留言内容
+            orderDetailList: detailArrayList // 订单中的商品列表
+          };
+          //发送提交订单的请求,因为用到了请求结果，所以此处进行赋值
+          const result = await this.$API.reqSubmitOrder(tradeNo,orderInfo)
+          //如果支付成功跳转到支付页面
+          if(result.code === 200){
+            console.log(result);
+            //获取订单ID
+            const orderId = result.data
+            //跳转支付页面
+            this.$router.push({
+              path:'/pay',
+              query:{orderId}
+            });
+            //字符串形式
+            // this.$router.push('/pay?orderId='+orderId);
+          }else{
+            alert('提交订单失败')
+          }
+      }
+    },
   }
-</script>
+</script> 
 
 <style lang="less" scoped>
   .trade-container {

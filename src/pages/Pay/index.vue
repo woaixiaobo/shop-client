@@ -7,8 +7,9 @@
           <span class="success-info">订单提交成功，请您及时付款，以便尽快为您发货~~</span>
         </h4>
         <div class="paymark">
-          <span class="fl">请您在提交订单<em class="orange time">4小时</em>之内完成支付，超时订单会自动取消。订单号：<em>145687</em></span>
-          <span class="fr"><em class="lead">应付金额：</em><em class="orange money">￥17,654</em></span>
+          <span class="fl">请您在提交订单<em class="orange time">4小时</em>
+          之内完成支付，超时订单会自动取消。订单号：<em>{{orderId}}</em></span>
+          <span class="fr"><em class="lead">应付金额：</em><em class="orange money">{{payInfo.totalFee}}</em></span>
         </div>
       </div>
       <div class="checkout-info">
@@ -65,7 +66,7 @@
         <div class="hr"></div>
 
         <div class="submit">
-          <router-link class="btn" to="/paysuccess">立即支付</router-link>
+          <a class="btn" href="javascript:" @click="pay" >立即支付</a>
         </div>
         <div class="otherpay">
           <div class="step-tit">
@@ -82,8 +83,82 @@
 </template>
 
 <script>
+import QRCode from 'qrcode'
   export default {
     name: 'Pay',
+    props: ['orderId'],
+    computed: {
+      payInfo(){
+        return this.$store.state.order.payInfo;
+      }
+    },
+    mounted() {
+      this.$store.dispatch('getPayInfo', this.orderId)
+    },
+    methods: {
+      pay(){
+        QRCode.toDataURL(this.payInfo.codeUrl)
+          .then(url => { // url就是二维码图片
+            console.log(url)
+            // 显示支付二维码界面 ,这个方法返回的是promise,所以then方法处理结果,
+               //是正确还是错误,如果不进行处理,错误时就会抛错
+            this.$alert(`<img src="${url}">`, '请使用微信扫码支付', {
+              dangerouslyUseHTMLString: true, // 解析内容中的html标签文本
+              center: true, // 居中显示
+              showClose: false, // 不显示右上角的关闭
+              showCancelButton: true, // 显示取消按钮
+              cancelButtonText: '支付中遇到了问题', // 显示取消按钮的内容
+              confirmButtonText: '我已成功支付'  // 成功按钮的内容
+            })
+            .then(
+              ()=>{ //点击已支付
+                  //跳转到成功页面
+                  this.$router.push('/paysuccess')
+              }
+            ).catch(
+              ()=>{ //点击有问题时,此时是错误穿透
+                this.$message({
+                  message: '找前台妹子!',
+                  type: 'warning'
+                })
+              }
+            )
+            })
+            
+            this.intervalId = setInterval(()=>{
+              this.$API.reqOrderStatus(this.orderId)
+              .then(
+                result=>{
+                  console.log(result);
+                  //如果支付成功,自动关闭对话框并且跳转到支付成功的页面
+                  if(result.code===200){
+                    //关闭对话框,msgbox 原型当中的
+                    this.$msgbox.close();
+                    //跳转到成功页面
+                    this.$router.push('/paysuccess')
+                    //清除定时器
+                    clearInterval(this.intervalId);
+                    //提示支付成功, message 方法
+                    this.$message.success('支付成功');
+                    //同时删除购物车所选 , 直接调用对应的异步action方法即可
+                    this.$store.dispatch('deleteAllCart')
+                  }
+                }
+              )
+              .catch(
+                ()=>{
+                  //错误时也要清楚掉定时器
+                  clearInterval(this.intervalId);
+                  //并且弹出错误的提示框  message 方法
+                  this.$message({
+                    message: '获取订单状态失败!',
+                    type: 'error'
+                  })
+                }
+              )
+            },2000)
+      }
+    },
   }
 </script>
 
