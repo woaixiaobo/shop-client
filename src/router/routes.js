@@ -1,4 +1,4 @@
-import Home from "@/pages/Home"
+// import Home from "@/pages/Home"
 import Search from '@/pages/Search'
 import Register from '@/pages/Register'
 import Login from '@/pages/Login'
@@ -14,7 +14,10 @@ import GroupBuy from '@/pages/Center/GroupBuy'
 // import store from '@/store'
 export default [{
         path: '/',
-        component: Home,
+        //component: Home,  //默认的方式
+        //懒加载的方式,只有(第一次)在跳转到对应路由的时候才会被调用,然后打包这个js文件
+        //第二次在调用时不会重新打包 因为第一次已经打包好了
+        component:()=> import ('@/pages/Home')
     },
     {
         name: 'Search',
