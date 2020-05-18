@@ -23,6 +23,14 @@ import 'swiper/css/swiper.min.css'
 import './validate.js'
 //引入element ui
 import './elements'
+//引入图片懒加载js包
+import VueLazyload from 'vue-lazyload'
+//引入加载图片
+import loading from '@/assets/images/loading.gif'
+// 配置vue的插件
+Vue.use(VueLazyload, { // 内部自定义一个指令: lazy
+  loading,  // 配置loading图片
+})
 new Vue({
   render: h => h(App),
   router,
