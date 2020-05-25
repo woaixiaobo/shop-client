@@ -15,7 +15,7 @@
 
     <!-- 组件标签上的 v-model的本质: 动态的value与自定义事件 input -->
 
-    <!-- 此时确保了子组件上边分发了自定义属性inout -->
+    <!-- 此时确保了子组件上边分发了自定义属性input,并且props接受了value数据 -->
     <CustomInput v-model="name3"/>
     <span>{{name3}}</span>
     

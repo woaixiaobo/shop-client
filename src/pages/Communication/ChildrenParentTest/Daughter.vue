@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import {cpMixin} from './mixins'
+import {cpMixin} from './mixins' //引入mixins的js包
 export default {
   name: 'Daughter',
   mixins: [cpMixin], // 配置mixin
@@ -15,7 +15,7 @@ export default {
       money: 20000
     }
   },
-  methods: {
+  methods: {//如果这里边也有方法，会和mixins当中的合并
     
   }
 }
